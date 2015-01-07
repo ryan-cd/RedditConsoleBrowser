@@ -1,7 +1,6 @@
 import praw
 import time
 import pprint
-from itertools import islice
 
 
 
@@ -59,56 +58,94 @@ class Stories:
     def get_amount_per_page(self):
         return self.amount_per_page
 
-class Comments:
+    def get_submission(self, post_number):
+        return self.stories_list[post_number-1].id
+
+class Submission:
+    #submission_id is recieved as a string
     def __init__(self, submission_id):
-        self.submission = r.get_submission(submission_id = submission_id)
-        self.forest_comments = submission.comments
+        self.submission = r.get_submission(submission_id=submission_id)
+        self.forest_comments = self.submission.comments
+        self.current_comment = self.forest_comments[0]
         
-        #post = r.get_submission(submission_id='2qnguy')
-        #post.selftext
+    def show_post(self):
+        print('show post')
+        print('$---------------------------------'
+              '\n Viewing topic', self.submission.id, '. . .'
+              '\n$---------------------------------')
+        print(self.submission.url, '\n', self.submission.selftext)
+        
+        
         #print(vars(post.comments[0]) to see the vars in a comment
         #str(post.comments[0].body)
         
         
 def login():
     print('\nPlease login to Reddit')
-    login_username = 'api_test1'#input('\nUsername: ')
-    login_password = 'qWaszx1'#input('Password: ')
+    login_username = input('\nUsername: ')
+    login_password = input('Password: ')
     try:
         r.login(login_username, login_password)
     except:
         print('Oops! The login was not recognized, please try again.')
         login()
 
+def comments( submission_id ):
+    submission_object = Submission(submission_id)
+    submission_object.show_post()
+
+    choice = '!' #temporary flag value
+    while(choice != 'b'):
+        submission_object.print_comment_block()
+
+        while(choice != 'n' or choice != 'p' or choice != 'b'):
+            choice = input('\nChoose an action: [n]ext, [p]rev, [b]ack: ')
+            if(choice == 'n'):
+                print('next block')
+                break
+            elif(choice == 'p'):
+                print('next block')
+                break
+            elif(choice == 'b'):
+                break
+            else:
+                print(choice, '$ Command not recognized, please try again')
+                continue
+    #at this point the function is done and control will be handed back to the caller
+
 def frontpage():
     print('$ Hang tight, fetching stories...')
     
     front_page = Stories(r.get_front_page(limit=200))
-
-    while(True):
+    choice = '!' # temporary flag, will be assigned by user
+          
+    while(choice != 'b'):
         front_page.print_page()
-        choice = '!' # temporary flag, will be assigned by user
+        
         while(choice != 'n' or choice != 'p' or choice != 'b'):
             choice = input('\nChoose an action: [#] view comments [n]ext, [p]rev, [b]ack: ')
             try:
                 if(int(choice) >= front_page.get_index_start() + 1
                      and int(choice) < front_page.get_index_start() + front_page.get_amount_per_page() + 1):
-                    print('comments requested')
+                    #print('comments requested')
+                    #print(str(front_page.get_submission(int(choice))))
+                    
+                    #print('going to ', str(front_page.get_submission(int(choice))))
+                    comments(front_page.get_submission(int(choice)))
                     continue
             except:
                 pass
             
             if(choice == 'n'):
-                front_page.print_page()
                 front_page.next_page()
                 break
             elif(choice == 'p'):
                 front_page.previous_page()
                 break
             elif(choice == 'b'):
-                menu()
+                break
             else:
-                print('$ Command not recognized, please try again')
+                print(choice, '$ Command not recognized, please try again')
                 continue
     menu()
     
