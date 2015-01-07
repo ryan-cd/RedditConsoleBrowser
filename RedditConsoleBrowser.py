@@ -62,20 +62,24 @@ class Stories:
         return self.stories_list[post_number-1].id
 
 class Submission:
-    #submission_id is recieved as a string
     def __init__(self, submission_id):
         self.submission = r.get_submission(submission_id=submission_id)
         self.forest_comments = self.submission.comments
-        self.current_comment = self.forest_comments[0]
+        self.current_block = 0
+        self.current_comment = self.forest_comments[self.current_block]
+        
         
     def show_post(self):
-        print('show post')
         print('$---------------------------------'
               '\n Viewing topic', self.submission.id, '. . .'
               '\n$---------------------------------')
         print(self.submission.url, '\n', self.submission.selftext)
         
-        
+    def print_comment_block(self):
+        print('\n', self.current_comment.body)
+        #print('body', self.forest_comments[0].body)
+        #for i in range(0, len(current_comment.replies)):
+            #print('\n', current_comment.replies[i].body)
         #print(vars(post.comments[0]) to see the vars in a comment
         #str(post.comments[0].body)
         
@@ -93,7 +97,7 @@ def login():
 def comments( submission_id ):
     submission_object = Submission(submission_id)
     submission_object.show_post()
-
+    #submission_object.print_comment_block()
     choice = '!' #temporary flag value
     while(choice != 'b'):
         submission_object.print_comment_block()
@@ -104,12 +108,12 @@ def comments( submission_id ):
                 print('next block')
                 break
             elif(choice == 'p'):
-                print('next block')
+                print('prev block')
                 break
             elif(choice == 'b'):
                 break
             else:
-                print(choice, '$ Command not recognized, please try again')
+                print(choice, '$ Comment command not recognized, please try again')
                 continue
     #at this point the function is done and control will be handed back to the caller
 
