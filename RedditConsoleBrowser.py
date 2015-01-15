@@ -62,11 +62,14 @@ class Stories:
 class Submission:
     def __init__(self, submission_id):
         self.submission = r.get_submission(submission_id=submission_id)
-        self.forest_comments = self.submission.comments
-        self.flat_comments = praw.helpers.flatten_tree(self.submission.comments)
-        self.current_comment_block = 0
-        self.current_comment = self.forest_comments[self.current_comment_block]
-        self.flat_comment_index = 0
+        try:
+            self.forest_comments = self.submission.comments
+            #self.flat_comments = praw.helpers.flatten_tree(self.submission.comments)
+            self.current_comment_block = 0
+            self.current_comment = self.forest_comments[self.current_comment_block]
+            self.flat_comment_index = 0
+        except:
+            pass
         
     def show_post(self):
         print('$---------------------------------'
@@ -77,12 +80,15 @@ class Submission:
         print('________________________')
         
     def print_comment_block(self):
-        self.current_comment = self.forest_comments[self.current_comment_block]
-        print(self.current_comment.score, self.current_comment.body)
-        for i in range(0, len(self.current_comment.replies)):
-            if(hasattr(self.current_comment.replies[i], 'body')):
-                print('>>>', self.current_comment.replies[i].score, self.current_comment.replies[i].body)
-     
+        try:
+            self.current_comment = self.forest_comments[self.current_comment_block]
+            print(self.current_comment.score, self.current_comment.body)
+            for i in range(0, len(self.current_comment.replies)):
+                if(hasattr(self.current_comment.replies[i], 'body')):
+                    print('>>>', self.current_comment.replies[i].score, self.current_comment.replies[i].body)
+        except:
+            pass
+        
     def next_comment_block(self):
         if(self.current_comment_block + 1 < len(self.forest_comments) - 1):
             self.current_comment_block = self.current_comment_block + 1    
@@ -96,7 +102,7 @@ class Submission:
 #
         
 def login():
-    print('\nPlease login to Reddit')
+    print('\n$ Please login to Reddit')
     login_username = input('\nUsername: ')
     login_password = input('Password: ')
     try:
@@ -111,10 +117,13 @@ def comments( submission_id ):
     choice = '!' #temporary flag value
     
     while(choice != 'b'):
-        submission_object.print_comment_block()
+        try:
+            submission_object.print_comment_block()
+        except:
+            pass
         
         while(choice != 'n' or choice != 'p' or choice != 'b'):
-            choice = input('\nChoose an action: [n]ext comment, [p]rev comment, [b]ack: ')
+            choice = input('\n$ Choose an action: [n]ext comment, [p]rev comment, [b]ack: ')
             if(choice == 'n'):
                 submission_object.next_comment_block()
                 break
@@ -128,30 +137,38 @@ def comments( submission_id ):
                 continue
     #at this point the function is done and control will be handed back to the caller
 
-def frontpage():
+def browse_pages(subreddit='!'):
     print('$ Hang tight, fetching stories...')
-    
-    front_page = Stories(r.get_front_page(limit=100))
+    if(subreddit == '!'):
+        stories_object = Stories(r.get_front_page(limit=100))
+    else:
+        try:
+            stories_object = Stories(r.get_subreddit(subreddit).get_hot(limit=100))
+        except:
+            print('$ Subreddit not found, please try again')
+            menu()
+        
+        
     choice = '!' # temporary flag, will be assigned by user
           
     while(choice != 'b'):
-        front_page.print_page()
+        stories_object.print_page()
         
         while(choice != 'n' or choice != 'p' or choice != 'b'):
-            choice = input('\nChoose an action: [#] view comments [n]ext, [p]rev, [b]ack: ')
+            choice = input('\n$ Choose an action: [#] view comments [n]ext, [p]rev, [b]ack: ')
             try:
-                if(int(choice) >= front_page.get_index_start() + 1
-                     and int(choice) < front_page.get_index_start() + front_page.get_amount_per_page() + 1):
-                    comments(front_page.get_submission(int(choice)))
+                if(int(choice) >= stories_object.get_index_start() + 1
+                     and int(choice) < stories_object.get_index_start() + stories_object.get_amount_per_page() + 1):
+                    comments(stories_object.get_submission(int(choice)))
                     break
             except:
                 pass
             
             if(choice == 'n'):
-                front_page.next_page()
+                stories_object.next_page()
                 break
             elif(choice == 'p'):
-                front_page.previous_page()
+                stories_object.previous_page()
                 break
             elif(choice == 'b'):
                 break
@@ -162,15 +179,17 @@ def frontpage():
     
             
 def menu():
-    #choice = input('What would you like to do? [f]rontpage, [s]ubreddits, [m]ail: ')
-    #if(choice == 'f'):
-    frontpage()
-    #elif(choice == 's'):
-        
-    #elif(choice == 'm'):
+    choice = input('$ What would you like to do? [f]rontpage, [s]ubreddits')
+    if(choice == 'f'):
+        browse_pages()
+    elif(choice == 's'):
+        browse_pages(input("Enter subreddit name"))
+    else:
+        print('$ Command not recognized, please try again')
+        menu()
 
 #main entry point
-print('Welcome to Reddit Console Browser.')
+print('$ Welcome to Reddit Console Browser.')
 r = praw.Reddit('Reddit console browser by /u/api_test1 v1.0')
 login()
 menu()
