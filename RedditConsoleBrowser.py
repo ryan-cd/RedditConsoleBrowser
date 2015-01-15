@@ -72,14 +72,16 @@ class Submission:
         print('$---------------------------------'
               '\n Viewing topic', self.submission.title, '. . .'
               '\n$---------------------------------')
-        print(self.submission.url, '\n', self.submission.selftext)
+        print(self.submission.url, '\nOP:', self.submission.selftext)
+        print('________________________')
+        print('________________________')
         
     def print_comment_block(self):
         self.current_comment = self.forest_comments[self.current_comment_block]
-        print(self.current_comment.body)
+        print(self.current_comment.score, self.current_comment.body)
         for i in range(0, len(self.current_comment.replies)):
             if(hasattr(self.current_comment.replies[i], 'body')):
-                print('--', self.current_comment.replies[i].body)
+                print('>>>', self.current_comment.replies[i].score, self.current_comment.replies[i].body)
      
     def next_comment_block(self):
         if(self.current_comment_block + 1 < len(self.forest_comments) - 1):
@@ -112,7 +114,7 @@ def comments( submission_id ):
         submission_object.print_comment_block()
         
         while(choice != 'n' or choice != 'p' or choice != 'b'):
-            choice = input('\nChoose an action: [n]ext, [p]rev, [b]ack: ')
+            choice = input('\nChoose an action: [n]ext comment, [p]rev comment, [b]ack: ')
             if(choice == 'n'):
                 submission_object.next_comment_block()
                 break
@@ -141,7 +143,7 @@ def frontpage():
                 if(int(choice) >= front_page.get_index_start() + 1
                      and int(choice) < front_page.get_index_start() + front_page.get_amount_per_page() + 1):
                     comments(front_page.get_submission(int(choice)))
-                    continue
+                    break
             except:
                 pass
             
@@ -160,9 +162,9 @@ def frontpage():
     
             
 def menu():
-    choice = input('What would you like to do? [f]rontpage, [s]ubreddits, [m]ail: ')
-    if(choice == 'f'):
-        frontpage()
+    #choice = input('What would you like to do? [f]rontpage, [s]ubreddits, [m]ail: ')
+    #if(choice == 'f'):
+    frontpage()
     #elif(choice == 's'):
         
     #elif(choice == 'm'):
