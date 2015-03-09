@@ -14,7 +14,7 @@ class fcolors:
     CYAN = '\033[36m'
     WHITE = '\033[37m'
     RESET = '\033[39m'
-    
+
 class Stories:
     def __init__(self, obj):
         self.amount_per_page = 15
@@ -24,11 +24,11 @@ class Stories:
         self.index_start = 0
         self.index_end = self.amount_per_page
         self._update_page()
-        
+
     def _page_break(self):
         print(fcolors.GREEN + '\n>>new page --------------------------')
         print(fcolors.RESET)
-        
+
     def _update_page(self):
         self.page = []
         try:
@@ -38,7 +38,7 @@ class Stories:
             print(fcolors.RED + '\n$ There doesn\'t seem to be anything here.')
             print(fcolors.RESET)
             self.previous_page()
-        
+
     def set_object(self, obj):
         self.stories = obj
 
@@ -47,7 +47,7 @@ class Stories:
         for stories in self.get_page():
             print(fcolors.YELLOW, self.index_start + i, fcolors.RESET, '::', str(stories))
             i = i + 1
-            
+
     def next_page(self):
         self.index_start += self.amount_per_page
         self.index_end += self.amount_per_page
@@ -84,7 +84,7 @@ class Submission:
             self.flat_comment_index = 0
         except:
             pass
-        
+
     def show_post(self):
         print('$---------------------------------'
               '\n Viewing topic', self.submission.title, '. . .'
@@ -92,29 +92,30 @@ class Submission:
         print(self.submission.url, '\nOP:', self.submission.selftext)
         print('________________________')
         print('________________________')
-        
+
     def print_comment_block(self):
         try:
             self.current_comment = self.forest_comments[self.current_comment_block]
+
             print(fcolors.CYAN, self.current_comment.score, self.current_comment.body, fcolors.RESET)
             for i in range(0, len(self.current_comment.replies)):
                 if(hasattr(self.current_comment.replies[i], 'body')):
                     print(fcolors.MAGENTA, '>>>', self.current_comment.replies[i].score, self.current_comment.replies[i].body, fcolors.RESET)
         except:
             pass
-        
+
     def next_comment_block(self):
         if(self.current_comment_block + 1 < len(self.forest_comments) - 1):
-            self.current_comment_block = self.current_comment_block + 1    
-        
+            self.current_comment_block = self.current_comment_block + 1
+
     def previous_comment_block(self):
         if (self.current_comment_block - 1 >= 0):
-            self.current_comment_block = self.current_comment_block - 1  
-      
+            self.current_comment_block = self.current_comment_block - 1
+
 
 #FUNCTIONS
 #
-        
+
 def login():
     init();
     print(fcolors.GREEN+ '\n$ Please login to Reddit')
@@ -133,13 +134,13 @@ def comments( submission_id ):
     submission_object = Submission(submission_id)
     submission_object.show_post()
     choice = '!' #temporary flag value
-    
+
     while(choice != 'b'):
         try:
             submission_object.print_comment_block()
         except:
             pass
-        
+
         while(choice != 'n' or choice != 'p' or choice != 'b'):
             print(fcolors.GREEN + '\n$ Choose an action: [n]ext comment, [p]rev comment, [b]ack: ' + fcolors.RESET, end="")
             choice = input()
@@ -170,13 +171,13 @@ def browse_pages(subreddit='!'):
             print(fcolors.RED + '$ Subreddit not found, please try again')
             print(fcolors.RESET)
             menu()
-        
-        
+
+
     choice = '!' # temporary flag, will be assigned by user
-          
+
     while(choice != 'b'):
         stories_object.print_page()
-        
+
         while(choice != 'n' or choice != 'p' or choice != 'b'):
             print(fcolors.GREEN + '\n$ Choose an action: [#] view comments [n]ext, [p]rev, [b]ack: ' + fcolors.RESET, end="")
             choice = input()
@@ -188,7 +189,7 @@ def browse_pages(subreddit='!'):
                     break
             except:
                 pass
-            
+
             if(choice == 'n'):
                 stories_object.next_page()
                 break
@@ -203,8 +204,8 @@ def browse_pages(subreddit='!'):
                 print(fcolors.RESET)
                 continue
     menu()
-    
-            
+
+
 def menu():
     print(fcolors.GREEN + '$ What would you like to do? [f]rontpage, [s]ubreddits: ' + fcolors.RESET, end ="")
     choice = input()
@@ -224,4 +225,3 @@ print('$ Welcome to Reddit Console Browser.')
 r = praw.Reddit('Reddit console browser by /u/api_test1 v1.0')
 login()
 menu()
-
