@@ -1,13 +1,23 @@
 import praw
-import time
-import pprint
+import getpass
+from colorama import init
 
-
-
+#CLASSES
+#
+class fcolors:
+    BLACK = '\033[30m'
+    RED = '\033[31m'
+    GREEN = '\033[32m'
+    YELLOW = '\033[33m'
+    BLUE = '\033[34m'
+    MAGENTA = '\033[35m'
+    CYAN = '\033[36m'
+    WHITE = '\033[37m'
+    RESET = '\033[39m'
+    
 class Stories:
     def __init__(self, obj):
         self.amount_per_page = 15
-        #self.stories = obj
         self.stories_list = []
         for o in obj:
             self.stories_list.append(o)
@@ -16,7 +26,8 @@ class Stories:
         self._update_page()
         
     def _page_break(self):
-        print('\n>>new page --------------------------')
+        print(fcolors.GREEN + '\n>>new page --------------------------')
+        print(fcolors.RESET)
         
     def _update_page(self):
         self.page = []
@@ -24,7 +35,8 @@ class Stories:
             for i in range(self.index_start, self.index_end):
                 self.page.append(self.stories_list[i])
         except:
-            print('\n$ There doesn\'t seem to be anything here.')
+            print(fcolors.RED + '\n$ There doesn\'t seem to be anything here.')
+            print(fcolors.RESET)
             self.previous_page()
         
     def set_object(self, obj):
@@ -33,7 +45,7 @@ class Stories:
     def print_page(self):
         i = 1
         for stories in self.get_page():
-            print(self.index_start + i, '::', str(stories))
+            print(fcolors.YELLOW, self.index_start + i, fcolors.RESET, '::', str(stories))
             i = i + 1
             
     def next_page(self):
@@ -64,106 +76,151 @@ class Stories:
 class Submission:
     def __init__(self, submission_id):
         self.submission = r.get_submission(submission_id=submission_id)
-        self.forest_comments = self.submission.comments
-        self.current_block = 0
-        self.current_comment = self.forest_comments[self.current_block]
-        
+        try:
+            self.forest_comments = self.submission.comments
+            #self.flat_comments = praw.helpers.flatten_tree(self.submission.comments)
+            self.current_comment_block = 0
+            self.current_comment = self.forest_comments[self.current_comment_block]
+            self.flat_comment_index = 0
+        except:
+            pass
         
     def show_post(self):
         print('$---------------------------------'
-              '\n Viewing topic', self.submission.id, '. . .'
+              '\n Viewing topic', self.submission.title, '. . .'
               '\n$---------------------------------')
-        print(self.submission.url, '\n', self.submission.selftext)
+        print(self.submission.url, '\nOP:', self.submission.selftext)
+        print('________________________')
+        print('________________________')
         
     def print_comment_block(self):
-        print('\n', self.current_comment.body)
-        #print('body', self.forest_comments[0].body)
-        #for i in range(0, len(current_comment.replies)):
-            #print('\n', current_comment.replies[i].body)
-        #print(vars(post.comments[0]) to see the vars in a comment
-        #str(post.comments[0].body)
+        try:
+            self.current_comment = self.forest_comments[self.current_comment_block]
+            print(fcolors.CYAN, self.current_comment.score, self.current_comment.body, fcolors.RESET)
+            for i in range(0, len(self.current_comment.replies)):
+                if(hasattr(self.current_comment.replies[i], 'body')):
+                    print(fcolors.MAGENTA, '>>>', self.current_comment.replies[i].score, self.current_comment.replies[i].body, fcolors.RESET)
+        except:
+            pass
         
+    def next_comment_block(self):
+        if(self.current_comment_block + 1 < len(self.forest_comments) - 1):
+            self.current_comment_block = self.current_comment_block + 1    
+        
+    def previous_comment_block(self):
+        if (self.current_comment_block - 1 >= 0):
+            self.current_comment_block = self.current_comment_block - 1  
+      
+
+#FUNCTIONS
+#
         
 def login():
-    print('\nPlease login to Reddit')
+    init();
+    print(fcolors.GREEN+ '\n$ Please login to Reddit')
+    print(fcolors.WHITE)
     login_username = input('\nUsername: ')
-    login_password = input('Password: ')
+    login_password = getpass.getpass('Password: ')
     try:
         r.login(login_username, login_password)
+        print(fcolors.RESET)
     except:
-        print('Oops! The login was not recognized, please try again.')
+        print(fcolors.RED + '$ Oops! The login was not recognized, please try again.')
+        print(fcolors.RESET)
         login()
 
 def comments( submission_id ):
     submission_object = Submission(submission_id)
     submission_object.show_post()
-    #submission_object.print_comment_block()
     choice = '!' #temporary flag value
+    
     while(choice != 'b'):
-        submission_object.print_comment_block()
-
+        try:
+            submission_object.print_comment_block()
+        except:
+            pass
+        
         while(choice != 'n' or choice != 'p' or choice != 'b'):
-            choice = input('\nChoose an action: [n]ext, [p]rev, [b]ack: ')
+            print(fcolors.GREEN + '\n$ Choose an action: [n]ext comment, [p]rev comment, [b]ack: ' + fcolors.RESET, end="")
+            choice = input()
+            print(fcolors.RESET)
             if(choice == 'n'):
-                print('next block')
+                submission_object.next_comment_block()
                 break
             elif(choice == 'p'):
-                print('prev block')
+                submission_object.previous_comment_block()
                 break
             elif(choice == 'b'):
                 break
             else:
-                print(choice, '$ Comment command not recognized, please try again')
+                print(choice, fcolors.RED + '$ Comment command not recognized, please try again')
+                print(fcolors.RESET)
                 continue
     #at this point the function is done and control will be handed back to the caller
 
-def frontpage():
-    print('$ Hang tight, fetching stories...')
-    
-    front_page = Stories(r.get_front_page(limit=200))
+def browse_pages(subreddit='!'):
+    print(fcolors.GREEN + '$ Hang tight, fetching stories...')
+    print(fcolors.RESET)
+    if(subreddit == '!'):
+        stories_object = Stories(r.get_front_page(limit=100))
+    else:
+        try:
+            stories_object = Stories(r.get_subreddit(subreddit).get_hot(limit=100))
+        except:
+            print(fcolors.RED + '$ Subreddit not found, please try again')
+            print(fcolors.RESET)
+            menu()
+        
+        
     choice = '!' # temporary flag, will be assigned by user
           
     while(choice != 'b'):
-        front_page.print_page()
+        stories_object.print_page()
         
         while(choice != 'n' or choice != 'p' or choice != 'b'):
-            choice = input('\nChoose an action: [#] view comments [n]ext, [p]rev, [b]ack: ')
+            print(fcolors.GREEN + '\n$ Choose an action: [#] view comments [n]ext, [p]rev, [b]ack: ' + fcolors.RESET, end="")
+            choice = input()
+            print(fcolors.RESET)
             try:
-                if(int(choice) >= front_page.get_index_start() + 1
-                     and int(choice) < front_page.get_index_start() + front_page.get_amount_per_page() + 1):
-                    #print('comments requested')
-                    #print(str(front_page.get_submission(int(choice))))
-                    
-                    #print('going to ', str(front_page.get_submission(int(choice))))
-                    comments(front_page.get_submission(int(choice)))
-                    continue
+                if(int(choice) >= stories_object.get_index_start() + 1
+                     and int(choice) < stories_object.get_index_start() + stories_object.get_amount_per_page() + 1):
+                    comments(stories_object.get_submission(int(choice)))
+                    break
             except:
                 pass
             
             if(choice == 'n'):
-                front_page.next_page()
+                stories_object.next_page()
                 break
             elif(choice == 'p'):
-                front_page.previous_page()
+                stories_object.previous_page()
                 break
             elif(choice == 'b'):
                 break
             else:
+                print(fcolors.RED)
                 print(choice, '$ Command not recognized, please try again')
+                print(fcolors.RESET)
                 continue
     menu()
     
             
 def menu():
-    choice = input('What would you like to do? [f]rontpage, [s]ubreddits, [m]ail: ')
+    print(fcolors.GREEN + '$ What would you like to do? [f]rontpage, [s]ubreddits: ' + fcolors.RESET, end ="")
+    choice = input()
+    print(fcolors.RESET)
     if(choice == 'f'):
-        frontpage()
-    #elif(choice == 's'):
-        
-    #elif(choice == 'm'):
+        browse_pages()
+    elif(choice == 's'):
+        print(fcolors.GREEN + "Enter subreddit name: " + fcolors.RESET, end="")
+        browse_pages(input())
+    else:
+        print(fcolors.RED + '$ Command not recognized, please try again')
+        print(fcolors.RESET)
+        menu()
 
 #main entry point
-print('Welcome to Reddit Console Browser.')
+print('$ Welcome to Reddit Console Browser.')
 r = praw.Reddit('Reddit console browser by /u/api_test1 v1.0')
 login()
 menu()
