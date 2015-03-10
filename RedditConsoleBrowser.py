@@ -1,3 +1,4 @@
+from __future__ import print_function
 import praw
 import getpass
 from colorama import init
