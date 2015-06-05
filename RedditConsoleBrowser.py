@@ -46,10 +46,17 @@ class Stories:
     def print_page(self):
         i = 1
         for stories in self.get_page():
+            print(fcolors.YELLOW, self.index_start + i, fcolors.RESET, '::', end="")
             try:
-                print(fcolors.YELLOW, self.index_start + i, fcolors.RESET, '::', str(stories))
+                print(str(stories))
             except:
-                print(fcolors.YELLOW, self.index_start + i, fcolors.RED, '$ Post contains unsupported characters', fcolors.RESET)
+                story_string = str(stories)
+                for char in story_string:
+                    try:
+                        print(char, end="")
+                    except:
+                        print('[]', end="")
+                print()
             i = i + 1
 
     def next_page(self):
