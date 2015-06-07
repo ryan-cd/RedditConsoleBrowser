@@ -216,9 +216,42 @@ def browse_pages(subreddit='!'):
                 continue
     menu()
 
+def messaging():
+    choice = '!'
+    while(choice != 'b'):
+        print(fcolors.GREEN + '\n$ Choose an action: [s]end a message, [b]ack: ' + fcolors.RESET, end="")
+        choice = input()
+        if(choice == 's'):
+            user = ''
+            print(fcolors.GREEN + '\n$ Enter the user to send to: ' + fcolors.RESET, end="")
+            user = input()
+            print(fcolors.GREEN + '\n$ Enter the subject: ' + fcolors.RESET, end="")
+            subject = input()
+            print(fcolors.GREEN + '\n$ Enter the message: ' + fcolors.RESET, end="")
+            message = input()
+            
+            if(sendMessage(user, subject, message)):
+                print(fcolors.GREEN + '\n$ Sent' + fcolors.RESET)
+            else:
+                print(fcolors.RED + '\n$ Send failed ' + fcolors.RESET)
+        else:
+            print(fcolors.RED)
+            print(choice, '$ Command not recognized, please try again')
+            print(fcolors.RESET)
+        
+    menu()
 
+def sendMessage(user, subject, message):
+    try:
+        r.send_message(user, subject, message)
+    except:
+        return False
+    
+    return True
+
+            
 def menu():
-    print(fcolors.GREEN + '$ What would you like to do? [f]rontpage, [s]ubreddits: ' + fcolors.RESET, end ="")
+    print(fcolors.GREEN + '$ What would you like to do? [f]rontpage, [s]ubreddits, [m]essaging: ' + fcolors.RESET, end ="")
     choice = input()
     print(fcolors.RESET)
     if(choice == 'f'):
@@ -226,6 +259,8 @@ def menu():
     elif(choice == 's'):
         print(fcolors.GREEN + "Enter subreddit name: " + fcolors.RESET, end="")
         browse_pages(input())
+    elif(choice == 'm'):
+        messaging()
     else:
         print(fcolors.RED + '$ Command not recognized, please try again')
         print(fcolors.RESET)
