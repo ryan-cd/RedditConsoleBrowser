@@ -1,6 +1,7 @@
 from __future__ import print_function
 import praw
 import getpass
+import textwrap
 from colorama import init
 
 #CLASSES
@@ -46,7 +47,7 @@ class Stories:
     def print_page(self):
         i = 1
         for stories in self.get_page():
-            print(fcolors.YELLOW, self.index_start + i, fcolors.RESET, '::', end="")
+            print(fcolors.YELLOW, self.index_start + i, fcolors.RESET+':: ', end="")
             try:
                 print(str(stories))
             except:
@@ -108,10 +109,17 @@ class Submission:
         try:
             self.current_comment = self.forest_comments[self.current_comment_block]
 
-            print(fcolors.CYAN, self.current_comment.score, self.current_comment.body, fcolors.RESET)
+            print(fcolors.CYAN, self.current_comment.score, ':', self.current_comment.body, fcolors.RESET)
+            
             for i in range(0, len(self.current_comment.replies)):
                 if(hasattr(self.current_comment.replies[i], 'body')):
-                    print(fcolors.MAGENTA, '>>>', self.current_comment.replies[i].score, self.current_comment.replies[i].body, fcolors.RESET)
+                    prefix = fcolors.MAGENTA + " | " + fcolors.RESET;
+                    prefix_length = 3
+                    wrapper = textwrap.TextWrapper(initial_indent=prefix, width=70, subsequent_indent=' '*prefix_length)
+                    message = str(self.current_comment.replies[i].score) + ' : ' + str(self.current_comment.replies[i].body)
+                    #print(message)
+                    print(wrapper.fill(message))
+                    #print(fcolors.MAGENTA, '>>>', self.current_comment.replies[i].score, self.current_comment.replies[i].body, fcolors.RESET)
         except:
             pass
 
