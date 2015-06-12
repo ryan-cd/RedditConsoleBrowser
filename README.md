@@ -9,7 +9,8 @@ This project was made to try out the Reddit API. It allows the user to login, br
 Requirements
 ---
 Tested on Windows / Linux / Mac OSX
-Python 3
+
+Python 3.x
 
 Libraries used
 ---
