@@ -108,15 +108,20 @@ class Submission:
     def print_comment_block(self):
         try:
             self.current_comment = self.forest_comments[self.current_comment_block]
-
-            print(self.current_comment.score, ':', self.current_comment.body, fcolors.RESET)
+            
+            print(fcolors.CYAN + str(self.current_comment.author.name), fcolors.YELLOW, '(' + str(self.current_comment.score) + ')', fcolors.RESET)
+            print(self.current_comment.body)
             
             for i in range(0, len(self.current_comment.replies)):
                 if(hasattr(self.current_comment.replies[i], 'body')):
                     prefix = fcolors.MAGENTA + " | " + fcolors.RESET;
                     prefix_length = 3
                     wrapper = textwrap.TextWrapper(initial_indent=prefix, width=70, subsequent_indent=' '*prefix_length)
-                    message = str(self.current_comment.replies[i].score) + ' : ' + str(self.current_comment.replies[i].body)
+                    
+                    heading = fcolors.CYAN+self.current_comment.replies[i].author.name + fcolors.YELLOW + ' (' + str(self.current_comment.replies[i].score) + ')' + fcolors.RESET
+                    print(wrapper.fill(heading))
+                    
+                    message = self.current_comment.replies[i].body
                     print(wrapper.fill(message))
         except:
             pass
