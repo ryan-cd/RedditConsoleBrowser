@@ -101,48 +101,30 @@ class Submission:
 
     def show_post(self):
         print('$------------------------------------------------'
-              '\n Viewing topic', self.submission.title, '. . .'
+              '\n' + str(self.submission.title) +
               '\n$----------------------------------------------')
-        print(self.submission.url, '\nOP:', self.submission.selftext)
-        print('________________________')
+        print(self.submission.selftext)
         print('________________________')
 
     def print_comment_block(self):
         try:
-
             self.current_comment = self.forest_comments[self.current_comment_block]
-
             self.print_comment(self.current_comment, 0)
-            #
-            # print(fcolors.CYAN + str(self.current_comment.author.name), fcolors.YELLOW, '(' + str(self.current_comment.score) + ')', fcolors.RESET)
-            # print(self.current_comment.body)
-            #
-            # for i in range(0, len(self.current_comment.replies)):
-            #     if(hasattr(self.current_comment.replies[i], 'body')):
-            #         prefix = fcolors.MAGENTA + " | " + fcolors.RESET;
-            #         prefix_length = 3
-            #         wrapper = textwrap.TextWrapper(initial_indent=prefix, width=70, subsequent_indent=' '*prefix_length)
-            #
-            #         heading = fcolors.CYAN+self.current_comment.replies[i].author.name + fcolors.YELLOW + ' (' + str(self.current_comment.replies[i].score) + ')' + fcolors.RESET
-            #         print(wrapper.fill(heading))
-            #
-            #         message = self.current_comment.replies[i].body
-            #         print(wrapper.fill(message))
         except:
             pass
 
     def print_comment(self, comment, depth):
         self.current_comment = comment
-        #print("$$$ "+ str(comment.author))
-        # print(fcolors.CYAN + str(self.current_comment.author.name), fcolors.YELLOW, '(' + str(self.current_comment.score) + ')', fcolors.RESET)
-        # print(self.current_comment.body)
 
         if(hasattr(self.current_comment, 'body')):
+            prefix_length = 2*depth
+
             if(depth > 0):
-                prefix = ((" ")*(depth)*3)+fcolors.color_array[depth] + " | " + fcolors.RESET
+                prefix = ((" ")*(depth)*2)+fcolors.color_array[depth] + "| " + fcolors.RESET
+                prefix_length += 2
             else:
                 prefix = ""
-            prefix_length = 3*depth + 3
+
             wrapper = textwrap.TextWrapper(initial_indent=prefix, width=70, subsequent_indent=' '*prefix_length)
 
             heading = fcolors.CYAN+self.current_comment.author.name + fcolors.YELLOW + ' (' + str(self.current_comment.score) + ')' + fcolors.RESET
@@ -153,7 +135,6 @@ class Submission:
 
 
             for i in range(0, len(self.current_comment.replies)):
-                #print(i)
                 self.print_comment(self.current_comment.replies[i], depth+1)
 
     def next_comment_block(self):
