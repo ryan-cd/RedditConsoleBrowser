@@ -17,6 +17,8 @@ class fcolors:
     WHITE = '\033[37m'
     RESET = '\033[39m'
 
+    color_array = [BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE, RESET]
+
 class Stories:
     def __init__(self, obj):
         self.amount_per_page = 15
@@ -98,33 +100,61 @@ class Submission:
             pass
 
     def show_post(self):
-        print('$---------------------------------'
+        print('$------------------------------------------------'
               '\n Viewing topic', self.submission.title, '. . .'
-              '\n$---------------------------------')
+              '\n$----------------------------------------------')
         print(self.submission.url, '\nOP:', self.submission.selftext)
         print('________________________')
         print('________________________')
 
     def print_comment_block(self):
         try:
+
             self.current_comment = self.forest_comments[self.current_comment_block]
-            
-            print(fcolors.CYAN + str(self.current_comment.author.name), fcolors.YELLOW, '(' + str(self.current_comment.score) + ')', fcolors.RESET)
-            print(self.current_comment.body)
-            
-            for i in range(0, len(self.current_comment.replies)):
-                if(hasattr(self.current_comment.replies[i], 'body')):
-                    prefix = fcolors.MAGENTA + " | " + fcolors.RESET;
-                    prefix_length = 3
-                    wrapper = textwrap.TextWrapper(initial_indent=prefix, width=70, subsequent_indent=' '*prefix_length)
-                    
-                    heading = fcolors.CYAN+self.current_comment.replies[i].author.name + fcolors.YELLOW + ' (' + str(self.current_comment.replies[i].score) + ')' + fcolors.RESET
-                    print(wrapper.fill(heading))
-                    
-                    message = self.current_comment.replies[i].body
-                    print(wrapper.fill(message))
+
+            self.print_comment(self.current_comment, 0)
+            #
+            # print(fcolors.CYAN + str(self.current_comment.author.name), fcolors.YELLOW, '(' + str(self.current_comment.score) + ')', fcolors.RESET)
+            # print(self.current_comment.body)
+            #
+            # for i in range(0, len(self.current_comment.replies)):
+            #     if(hasattr(self.current_comment.replies[i], 'body')):
+            #         prefix = fcolors.MAGENTA + " | " + fcolors.RESET;
+            #         prefix_length = 3
+            #         wrapper = textwrap.TextWrapper(initial_indent=prefix, width=70, subsequent_indent=' '*prefix_length)
+            #
+            #         heading = fcolors.CYAN+self.current_comment.replies[i].author.name + fcolors.YELLOW + ' (' + str(self.current_comment.replies[i].score) + ')' + fcolors.RESET
+            #         print(wrapper.fill(heading))
+            #
+            #         message = self.current_comment.replies[i].body
+            #         print(wrapper.fill(message))
         except:
             pass
+
+    def print_comment(self, comment, depth):
+        self.current_comment = comment
+        #print("$$$ "+ str(comment.author))
+        # print(fcolors.CYAN + str(self.current_comment.author.name), fcolors.YELLOW, '(' + str(self.current_comment.score) + ')', fcolors.RESET)
+        # print(self.current_comment.body)
+
+        if(hasattr(self.current_comment, 'body')):
+            if(depth > 0):
+                prefix = ((" ")*(depth)*3)+fcolors.color_array[depth] + " | " + fcolors.RESET
+            else:
+                prefix = ""
+            prefix_length = 3*depth + 3
+            wrapper = textwrap.TextWrapper(initial_indent=prefix, width=70, subsequent_indent=' '*prefix_length)
+
+            heading = fcolors.CYAN+self.current_comment.author.name + fcolors.YELLOW + ' (' + str(self.current_comment.score) + ')' + fcolors.RESET
+            print(wrapper.fill(heading))
+
+            message = self.current_comment.body
+            print(wrapper.fill(message))
+
+
+            for i in range(0, len(self.current_comment.replies)):
+                #print(i)
+                self.print_comment(self.current_comment.replies[i], depth+1)
 
     def next_comment_block(self):
         if(self.current_comment_block + 1 < len(self.forest_comments) - 1):
@@ -240,7 +270,7 @@ def messaging():
             subject = input()
             print(fcolors.GREEN + '\n$ Enter the message: ' + fcolors.RESET, end="")
             message = input()
-            
+
             if(sendMessage(user, subject, message)):
                 print(fcolors.GREEN + '\n$ Sent' + fcolors.RESET)
             else:
@@ -249,7 +279,7 @@ def messaging():
             print(fcolors.RED)
             print(choice, '$ Command not recognized, please try again')
             print(fcolors.RESET)
-        
+
     menu()
 
 def sendMessage(user, subject, message):
@@ -257,10 +287,10 @@ def sendMessage(user, subject, message):
         r.send_message(user, subject, message)
     except:
         return False
-    
+
     return True
 
-            
+
 def menu():
     print(fcolors.GREEN + '$ What would you like to do? [f]rontpage, [s]ubreddits, [m]essaging: ' + fcolors.RESET, end ="")
     choice = input()
