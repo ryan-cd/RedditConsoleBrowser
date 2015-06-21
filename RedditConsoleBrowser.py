@@ -49,9 +49,11 @@ class Stories:
     def print_page(self):
         i = 1
         for stories in self.get_page():
-            print(fcolors.YELLOW, self.index_start + i, fcolors.RESET+':: ', end="")
+            print(fcolors.YELLOW + str(self.index_start + i), fcolors.RESET, end="")
             try:
-                print(str(stories))
+                index = (len(str(stories.score))+4)
+                print(str(stories)[index:])
+
             except:
                 story_string = str(stories)
                 for char in story_string:
@@ -60,6 +62,11 @@ class Stories:
                     except:
                         print('[]', end="")
                 print()
+
+            finally:
+                print("score: " + str(stories.score) + " comments: " + str(stories.num_comments) + fcolors.RESET)
+                print("by " + fcolors.CYAN + str(stories.author.name) + fcolors.YELLOW + " to /r/" + str(stories.subreddit) + fcolors.RESET)
+
             i = i + 1
 
     def next_page(self):
@@ -150,7 +157,7 @@ class Submission:
 #
 
 def login():
-    init();
+    init()
     print(fcolors.GREEN+ '\n$ Please login to Reddit')
     print(fcolors.WHITE)
     login_username = input('\nUsername: ')
