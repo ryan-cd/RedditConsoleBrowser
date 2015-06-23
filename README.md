@@ -1,9 +1,9 @@
 # RedditConsoleBrowser
-A way to browse Reddit from within the console window. 
+A way to browse Reddit from within your console window.
 
-This project was made to try out the Reddit API. It allows the user to login, browse their front page, go to subreddits, and message other accounts. Users are able to view different posts and read comments.
+It allows the user to login, browse their front page, go to subreddits, and message other accounts. Users are able to view different posts and read comments.
 
-![alt-text](http://i.imgur.com/omXAtaE.png "Screenshot")
+![alt-text](http://i.imgur.com/Dza3T7E.png "Screenshot")
 
 
 Requirements
@@ -14,5 +14,9 @@ Python 3.x
 
 Libraries used
 ---
-[PRAW](https://praw.readthedocs.org)
+[PRAW](https://praw.readthedocs.org),
 [Colorama](https://pypi.python.org/pypi/colorama)
+
+These dependencies can be installed with the command:
+
+__pip install praw colorama__
