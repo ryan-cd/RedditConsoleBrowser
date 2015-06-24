@@ -250,19 +250,27 @@ def messaging():
     while(choice != 'b'):
         print(fcolors.GREEN + '\n$ Choose an action: [s]end a message, [b]ack: ' + fcolors.RESET, end="")
         choice = input()
+        print(fcolors.GREEN + '$ Use [b] at any time to go back')
         if(choice == 's'):
-            user = ''
             print(fcolors.GREEN + '\n$ Enter the user to send to: ' + fcolors.RESET, end="")
             user = input()
+            if(user == 'b'):
+                continue
             print(fcolors.GREEN + '\n$ Enter the subject: ' + fcolors.RESET, end="")
             subject = input()
+            if(subject == 'b'):
+                continue
             print(fcolors.GREEN + '\n$ Enter the message: ' + fcolors.RESET, end="")
             message = input()
+            if(message == 'b'):
+                continue
 
-            if(sendMessage(user, subject, message)):
+            if(send_message(user, subject, message)):
                 print(fcolors.GREEN + '\n$ Sent' + fcolors.RESET)
             else:
                 print(fcolors.RED + '\n$ Send failed ' + fcolors.RESET)
+        elif(choice == 'b'):
+            break;
         else:
             print(fcolors.RED)
             print(choice, '$ Command not recognized, please try again')
@@ -270,7 +278,7 @@ def messaging():
 
     menu()
 
-def sendMessage(user, subject, message):
+def send_message(user, subject, message):
     try:
         r.send_message(user, subject, message)
     except:
