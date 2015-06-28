@@ -49,10 +49,10 @@ class Stories:
     def print_page(self):
         i = 1
         for stories in self.get_page():
-            print(fcolors.YELLOW + str(self.index_start + i), fcolors.RESET, end="")
+            print(fcolors.YELLOW + str(self.index_start + i) + " " + fcolors.RESET, end="")
             try:
-                index = (len(str(stories.score))+4)
-                print(str(stories)[index:])
+                story_start_index = (len(str(stories.score))+4)
+                print(str(stories)[story_start_index:])
 
             except:
                 story_string = str(stories)
@@ -64,9 +64,10 @@ class Stories:
                 print()
 
             finally:
-                print("score: " + str(stories.score) + " comments: " + str(stories.num_comments) + fcolors.RESET)
-                print("by " + fcolors.CYAN + str(stories.author.name) + fcolors.YELLOW + " to /r/" + str(stories.subreddit) + fcolors.RESET)
-
+                wrapper = textwrap.TextWrapper(initial_indent=' '*len(str((self.index_start + i)))+' ', width=70, subsequent_indent='')
+                print(wrapper.fill("Score: " + str(stories.score) + " Comments: " + str(stories.num_comments) + fcolors.RESET));
+                print(wrapper.fill("by " + fcolors.CYAN + str(stories.author.name) + fcolors.YELLOW + " to /r/" + str(stories.subreddit) + fcolors.RESET))
+                
             i = i + 1
 
     def next_page(self):
