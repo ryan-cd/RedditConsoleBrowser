@@ -10,13 +10,16 @@ Requirements
 ---
 Tested on Windows / Linux / Mac OSX
 
-Python 3.x
+Python 2.x or 3.x
 
 Libraries used
 ---
-[PRAW](https://praw.readthedocs.org),
-[Colorama](https://pypi.python.org/pypi/colorama)
+[PRAW](https://pypi.python.org/pypi/praw),
+[Colorama](https://pypi.python.org/pypi/colorama),
+[Future](https://pypi.python.org/pypi/future)
 
 These dependencies can be installed with the command:
 
-__pip install praw colorama__
+```
+pip install praw colorama future
+```

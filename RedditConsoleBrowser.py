@@ -1,4 +1,5 @@
 from __future__ import print_function
+from builtins import input
 import praw
 import getpass
 import textwrap
@@ -274,7 +275,7 @@ def messaging():
             break;
         else:
             print(fcolors.RED)
-            print(choice, '$ Command not recognized, please try again')
+            print(choice + ' $ Command not recognized, please try again')
             print(fcolors.RESET)
 
     menu()
