@@ -53,16 +53,11 @@ class Stories:
             print(fcolors.YELLOW + str(self.index_start + i) + " " + fcolors.RESET, end="")
             try:
                 story_start_index = (len(str(stories.score))+4)
-                print(str(stories)[story_start_index:])
+                story_string = str(stories)[story_start_index:]
+                print(story_string)
 
             except:
-                story_string = str(stories)
-                for char in story_string:
-                    try:
-                        print(char, end="")
-                    except:
-                        print('[]', end="")
-                print()
+                print_characters(story_string)
 
             finally:
                 wrapper = textwrap.TextWrapper(initial_indent=' '*len(str((self.index_start + i)))+' ', width=70, subsequent_indent='')
@@ -137,10 +132,13 @@ class Submission:
             wrapper = textwrap.TextWrapper(initial_indent=prefix, width=70, subsequent_indent=' '*prefix_length)
 
             heading = fcolors.CYAN+self.current_comment.author.name + fcolors.YELLOW + ' (' + str(self.current_comment.score) + ')' + fcolors.RESET
+            
             print(wrapper.fill(heading))
-
             message = self.current_comment.body
-            print(wrapper.fill(message))
+            try:
+                print(wrapper.fill(message))
+            except:
+                print_characters(wrapper.fill(message))
 
             num_replies = len(self.current_comment.replies)
             replies = self.current_comment.replies
@@ -290,6 +288,13 @@ def send_message(user, subject, message):
 
     return True
 
+def print_characters(story_string):
+    for char in story_string:
+        try:
+            print(char, end="")
+        except:
+            print('[]', end="")
+    print()
 
 def menu():
     print(fcolors.GREEN + '$ What would you like to do? [f]rontpage, [s]ubreddits, [m]essaging: ' + fcolors.RESET, end ="")
