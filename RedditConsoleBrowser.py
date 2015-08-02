@@ -142,9 +142,11 @@ class Submission:
             message = self.current_comment.body
             print(wrapper.fill(message))
 
-
-            for i in range(0, len(self.current_comment.replies)):
-                self.print_comment(self.current_comment.replies[i], depth+1)
+            num_replies = len(self.current_comment.replies)
+            replies = self.current_comment.replies
+            
+            for i in range(0, num_replies):
+                self.print_comment(replies[i], depth+1)
 
     def next_comment_block(self):
         if(self.current_comment_block + 1 < len(self.forest_comments) - 1):
