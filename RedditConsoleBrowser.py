@@ -1,9 +1,10 @@
 from __future__ import print_function
 from builtins import input
 import praw
+from colorama import init
 import getpass
 import textwrap
-from colorama import init
+import webbrowser
 
 #CLASSES
 #
@@ -184,7 +185,7 @@ def comments( submission_id ):
             pass
 
         while(choice != 'n' or choice != 'p' or choice != 'b'):
-            print(fcolors.GREEN + '\n$ Choose an action: [n]ext comment, [p]rev comment, [b]ack: ' + fcolors.RESET, end="")
+            print(fcolors.GREEN + '\n$ Choose an action: [n]ext, [p]rev, [o]pen in browser, [b]ack: ' + fcolors.RESET, end="")
             choice = input()
             print(fcolors.RESET)
             if(choice == 'n'):
@@ -192,6 +193,9 @@ def comments( submission_id ):
                 break
             elif(choice == 'p'):
                 submission_object.previous_comment_block()
+                break
+            elif (choice == 'o'):
+                webbrowser.open(submission_object.submission.url, new=2, autoraise=True)
                 break
             elif(choice == 'b'):
                 break
